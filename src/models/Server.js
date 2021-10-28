@@ -8,6 +8,7 @@ class Server {
 		this.app = express()
 		this.port = process.env.PORT
 		this.paths = {
+			auth: '/api/auth',
 			user: '/api/user',
 		}
 
@@ -37,6 +38,7 @@ class Server {
 	}
 
 	routes() {
+		this.app.use(this.paths.auth, require('../routes/auth.route'))
 		this.app.use(this.paths.user, require('../routes/user.route'))
 	}
 
