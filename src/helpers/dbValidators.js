@@ -16,7 +16,6 @@ const existUserInDB = async (id = '') => {
 
 const isRoleValid = async (role = '') => {
 	const existRole = await Role.findOne({ role })
-	console.log(existRole)
 
 	if (!existRole) throw new Error(`El rol ${role} no existe.`)
 }
