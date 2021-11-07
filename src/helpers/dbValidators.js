@@ -1,5 +1,5 @@
 const ObjectId = require('mongoose').Types.ObjectId
-const { User, Role } = require('../models')
+const { User, Role, Election } = require('../models')
 
 const dniExist = async (dni = '') => {
 	const existDNI = await User.findOne({ dni })
@@ -20,4 +20,11 @@ const isRoleValid = async (role = '') => {
 	if (!existRole) throw new Error(`El rol ${role} no existe.`)
 }
 
-module.exports = { existUserInDB, dniExist, isRoleValid }
+const existElecctionInDB = async (id = '') => {
+	if (!ObjectId.isValid(id)) return
+
+	const election = await Election.findById(id)
+	if (!election) throw new Error('Esta elección no existe')
+}
+
+module.exports = { existUserInDB, existElecctionInDB, dniExist, isRoleValid }

@@ -10,6 +10,7 @@ class Server {
 		this.paths = {
 			auth: '/api/auth',
 			user: '/api/user',
+			election: '/api/election',
 		}
 
 		// conectar con la db
@@ -39,6 +40,7 @@ class Server {
 
 	routes() {
 		this.app.use(this.paths.auth, require('../routes/auth.route'))
+		this.app.use(this.paths.election, require('../routes/election.route'))
 		this.app.use(this.paths.user, require('../routes/user.route'))
 	}
 
