@@ -28,6 +28,10 @@ const ElectionSchema = Schema({
 		required: true,
 		default: true,
 	},
+	deleted: {
+		type: Boolean,
+		default: false,
+	},
 	createdAt: {
 		type: Date,
 		default: Date.now,

@@ -8,6 +8,8 @@ const {
 	addCandidates,
 	addVoters,
 	registerVote,
+	openElection,
+	deleteElection,
 } = require('../controllers/election.controller')
 const { existElecctionInDB, existUserInDB } = require('../helpers')
 const {
@@ -56,6 +58,30 @@ router.put(
 		validateField,
 	],
 	closeElection
+)
+
+router.put(
+	'/open/:id',
+	[
+		validateJWT,
+		isAdminRole,
+		check('id', 'No es un ID válido').isMongoId(),
+		check('id').custom(existElecctionInDB),
+		validateField,
+	],
+	openElection
+)
+
+router.delete(
+	'/delete/:id',
+	[
+		validateJWT,
+		isAdminRole,
+		check('id', 'No es un ID válido').isMongoId(),
+		check('id').custom(existElecctionInDB),
+		validateField,
+	],
+	deleteElection
 )
 
 router.put(

@@ -3,11 +3,15 @@ const ObjectId = require('mongoose').Types.ObjectId
 const { Election } = require('../models')
 
 const getAllElections = async (req = request, res = response) => {
+	const query = req.query || null
+	const filter = query?.state ? Number(query.state) : null
+
 	try {
-		const electionList = await Election.find(null, {
+		const electionList = await Election.find(filter ? { state: filter } : {}, {
 			_id: 1,
 			position: 1,
 			description: 1,
+			state: 1,
 		}).sort([['createdAt', -1]])
 
 		res.status(200).json(electionList)
@@ -60,6 +64,42 @@ const closeElection = async (req = request, res = response) => {
 		const { _id, position, state } = election
 
 		res.status(200).json({ uid: _id, position, state })
+	} catch (error) {
+		console.log(error)
+		res.status(500).json({ msg: 'Error en el servidor' })
+	}
+}
+
+const openElection = async (req = request, res = response) => {
+	const { id } = req.params
+
+	try {
+		const election = await Election.findByIdAndUpdate(
+			id,
+			{ state: true },
+			{ new: true }
+		)
+		const { _id, position, state } = election
+
+		res.status(200).json({ uid: _id, position, state })
+	} catch (error) {
+		console.log(error)
+		res.status(500).json({ msg: 'Error en el servidor' })
+	}
+}
+
+const deleteElection = async (req = request, res = response) => {
+	const { id } = req.params
+
+	try {
+		const election = await Election.findByIdAndUpdate(
+			id,
+			{ deleted: true },
+			{ new: true }
+		)
+		const { _id, deleted } = election
+
+		res.status(200).json({ uid: _id, deleted })
 	} catch (error) {
 		console.log(error)
 		res.status(500).json({ msg: 'Error en el servidor' })
@@ -157,6 +197,8 @@ module.exports = {
 	createElection,
 	updateElection,
 	closeElection,
+	openElection,
+	deleteElection,
 	addCandidates,
 	addVoters,
 	registerVote,
