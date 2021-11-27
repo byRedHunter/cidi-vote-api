@@ -1,15 +1,16 @@
 const express = require('express')
 const { check } = require('express-validator')
 const {
-	createElection,
-	getAllElections,
-	updateElection,
-	closeElection,
 	addCandidates,
 	addVoters,
-	registerVote,
-	openElection,
+	closeElection,
+	createElection,
 	deleteElection,
+	getAllElections,
+	getAllCandidates,
+	openElection,
+	registerVote,
+	updateElection,
 } = require('../controllers/election.controller')
 const { existElecctionInDB, existUserInDB } = require('../helpers')
 const {
@@ -35,6 +36,8 @@ router.post(
 )
 
 router.get('/', getAllElections)
+
+router.get('/candidates/:id', getAllCandidates)
 
 router.put(
 	'/:id',

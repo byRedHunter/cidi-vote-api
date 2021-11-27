@@ -7,14 +7,32 @@ const getAllElections = async (req = request, res = response) => {
 	const filter = query?.state ? Number(query.state) : null
 
 	try {
-		const electionList = await Election.find(filter ? { state: filter } : {}, {
-			_id: 1,
-			position: 1,
-			description: 1,
-			state: 1,
-		}).sort([['createdAt', -1]])
+		const electionList = await Election.find(
+			filter ? { state: filter, deleted: false } : { deleted: false },
+			{
+				_id: 1,
+				position: 1,
+				description: 1,
+				state: 1,
+			}
+		).sort([['createdAt', -1]])
 
 		res.status(200).json(electionList)
+	} catch (error) {
+		console.log(error)
+		res.status(500).json({ msg: 'Error en el servidor.' })
+	}
+}
+
+const getAllCandidates = async (req = request, res = response) => {
+	const { id } = req.params
+
+	try {
+		const electionList = await Election.findById(id).populate({
+			path: 'candidates',
+		})
+
+		res.status(200).json(electionList.candidates)
 	} catch (error) {
 		console.log(error)
 		res.status(500).json({ msg: 'Error en el servidor.' })
@@ -194,6 +212,7 @@ const registerVote = async (req = request, res = response) => {
 
 module.exports = {
 	getAllElections,
+	getAllCandidates,
 	createElection,
 	updateElection,
 	closeElection,

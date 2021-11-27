@@ -11,6 +11,7 @@ class Server {
 			auth: '/api/auth',
 			user: '/api/user',
 			election: '/api/election',
+			search: '/api/search',
 		}
 
 		// conectar con la db
@@ -42,6 +43,7 @@ class Server {
 		this.app.use(this.paths.auth, require('../routes/auth.route'))
 		this.app.use(this.paths.election, require('../routes/election.route'))
 		this.app.use(this.paths.user, require('../routes/user.route'))
+		this.app.use(this.paths.search, require('../routes/search.route'))
 	}
 
 	listen() {
