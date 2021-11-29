@@ -23,6 +23,11 @@ const ElectionSchema = Schema({
 			amount: { type: Number },
 		},
 	],
+	private: {
+		type: Boolean,
+		required: true,
+		default: false,
+	},
 	state: {
 		type: Boolean,
 		required: true,

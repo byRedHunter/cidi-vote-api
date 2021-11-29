@@ -11,6 +11,8 @@ const {
 	openElection,
 	registerVote,
 	updateElection,
+	removeCandidate,
+	getAllPrivateElections,
 } = require('../controllers/election.controller')
 const { existElecctionInDB, existUserInDB } = require('../helpers')
 const {
@@ -36,6 +38,8 @@ router.post(
 )
 
 router.get('/', getAllElections)
+
+router.get('/private', getAllPrivateElections)
 
 router.get('/candidates/:id', getAllCandidates)
 
@@ -99,6 +103,20 @@ router.put(
 		validateField,
 	],
 	addCandidates
+)
+
+router.put(
+	'/candidate/remove/:id',
+	[
+		validateJWT,
+		isAdminRole,
+		check('id', 'No es un ID válido').isMongoId(),
+		check('id').custom(existElecctionInDB),
+		check('userId', 'No es un ID válido').isMongoId(),
+		check('userId').custom(existUserInDB),
+		validateField,
+	],
+	removeCandidate
 )
 
 router.put(

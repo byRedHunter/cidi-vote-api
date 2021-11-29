@@ -24,6 +24,26 @@ const getAllElections = async (req = request, res = response) => {
 	}
 }
 
+const getAllPrivateElections = async (req = request, res = response) => {
+	try {
+		const electionList = await Election.find(
+			{ state: true, deleted: false, private: true },
+			{
+				_id: 1,
+				position: 1,
+				description: 1,
+			}
+		)
+			//.where({ hasVoted: { $exists: true, $size: 0 } })
+			.sort([['createdAt', -1]])
+
+		res.status(200).json(electionList)
+	} catch (error) {
+		console.log(error)
+		res.status(500).json({ msg: 'Error en el servidor.' })
+	}
+}
+
 const getAllCandidates = async (req = request, res = response) => {
 	const { id } = req.params
 
@@ -127,7 +147,31 @@ const deleteElection = async (req = request, res = response) => {
 const addCandidates = async (req = request, res = response) => {
 	try {
 		const election = await Election.findById(req.params.id)
+
+		if (election.candidates.includes(new ObjectId(req.body.userId)))
+			return res.status(400).json({ msg: 'El candidato ya ha sido registrado' })
+
 		election.candidates.push(req.body.userId)
+		await election.save()
+
+		const { _id, candidates } = election
+
+		res.status(200).json({ uid: _id, candidates })
+	} catch (error) {
+		console.log(error)
+		res.status(500).json({ msg: 'Error en el servidor' })
+	}
+}
+
+const removeCandidate = async (req = request, res = response) => {
+	try {
+		const election = await Election.findById(req.params.id)
+
+		const index = election.candidates.indexOf(new ObjectId(req.body.userId))
+
+		if (!index) return res.status(400).json({ msg: 'Este candidato no existe' })
+
+		election.candidates.splice(index, 1)
 		await election.save()
 
 		const { _id, candidates } = election
@@ -142,6 +186,10 @@ const addCandidates = async (req = request, res = response) => {
 const addVoters = async (req = request, res = response) => {
 	try {
 		const election = await Election.findById(req.params.id)
+
+		if (election.voters.includes(new ObjectId(req.body.userId)))
+			return res.status(400).json({ msg: 'Este votante ya ha sido registrado' })
+
 		election.voters.push(req.body.userId)
 		await election.save()
 
@@ -160,12 +208,14 @@ const registerVote = async (req = request, res = response) => {
 		const { candidateId } = req.body
 		const election = await Election.findById(req.params.id)
 
-		// si el usuario con session pertenece a esta eleccion
-		const includeInElection = election.voters.find(
-			(vote) => ObjectId(vote).toString() === String(user._id)
-		)
-		if (!includeInElection)
-			return res.status(200).json({ msg: 'No perteneces a esta elección' })
+		// si el usuario con session pertenece a esta eleccion y la eleccion es privada
+		if (election.private) {
+			const includeInElection = election.voters.find(
+				(vote) => ObjectId(vote).toString() === String(user._id)
+			)
+			if (!includeInElection)
+				return res.status(200).json({ msg: 'No perteneces a esta elección' })
+		}
 
 		// si el candidato elegido pertenece a esta eleccion
 		const existCandidate = election.candidates.find(
@@ -213,6 +263,7 @@ const registerVote = async (req = request, res = response) => {
 module.exports = {
 	getAllElections,
 	getAllCandidates,
+	getAllPrivateElections,
 	createElection,
 	updateElection,
 	closeElection,
@@ -221,4 +272,5 @@ module.exports = {
 	addCandidates,
 	addVoters,
 	registerVote,
+	removeCandidate,
 }
