@@ -29,6 +29,7 @@ const ElectionSchema = Schema({
 		default: false,
 	},
 	state: {
+		// si la eleccion esta activa o no
 		type: Boolean,
 		required: true,
 		default: true,

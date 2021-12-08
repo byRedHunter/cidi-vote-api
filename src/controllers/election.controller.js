@@ -24,6 +24,55 @@ const getAllElections = async (req = request, res = response) => {
 	}
 }
 
+const getElectionsByUser = async (req = request, res = response) => {
+	const user = req.userAuthtenticated
+
+	try {
+		const electionUser = await Election.find(
+			{
+				// elecciones a las que pertenece el usuario con sesion y aun no ha registrado su voto es la eleccion
+				$and: [{ voters: user._id }, { $nor: [{ hasVoted: user._id }] }],
+			},
+			{
+				_id: 1,
+				position: 1,
+				description: 1,
+			}
+		).sort([['createdAt', -1]])
+
+		res.status(200).json(electionUser)
+	} catch (error) {
+		console.log(error)
+		res.status(500).json({ msg: 'Error en el servidor.' })
+	}
+}
+
+const getPublicElectionsByUser = async (req = request, res = response) => {
+	const user = req.userAuthtenticated
+
+	try {
+		const electionPublic = await Election.find(
+			{
+				// elecciones publicas que aun no hay votado
+				$and: [
+					{ deleted: false, state: true, private: false },
+					{ $nor: [{ hasVoted: user._id }] },
+				],
+			},
+			{
+				_id: 1,
+				position: 1,
+				description: 1,
+			}
+		).sort([['createdAt', -1]])
+
+		res.status(200).json(electionPublic)
+	} catch (error) {
+		console.log(error)
+		res.status(500).json({ msg: 'Error en el servidor.' })
+	}
+}
+
 const getAllPrivateElections = async (req = request, res = response) => {
 	try {
 		const electionList = await Election.find(
@@ -262,8 +311,10 @@ const registerVote = async (req = request, res = response) => {
 
 module.exports = {
 	getAllElections,
+	getElectionsByUser,
 	getAllCandidates,
 	getAllPrivateElections,
+	getPublicElectionsByUser,
 	createElection,
 	updateElection,
 	closeElection,

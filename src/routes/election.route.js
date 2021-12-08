@@ -8,11 +8,13 @@ const {
 	deleteElection,
 	getAllElections,
 	getAllCandidates,
+	getAllPrivateElections,
+	getElectionsByUser,
+	getPublicElectionsByUser,
 	openElection,
 	registerVote,
 	updateElection,
 	removeCandidate,
-	getAllPrivateElections,
 } = require('../controllers/election.controller')
 const { existElecctionInDB, existUserInDB } = require('../helpers')
 const {
@@ -42,6 +44,16 @@ router.get('/', getAllElections)
 router.get('/private', getAllPrivateElections)
 
 router.get('/candidates/:id', getAllCandidates)
+
+// las elecciones a las que pertenece el usuario con sesion y que aun no hay votado
+router.get(
+	'/list/public',
+	[validateJWT, validateField],
+	getPublicElectionsByUser
+)
+
+// las elecciones publicas y que aun no hay votado
+router.get('/list/user', [validateJWT, validateField], getElectionsByUser)
 
 router.put(
 	'/:id',
