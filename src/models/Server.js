@@ -11,6 +11,7 @@ class Server {
 			auth: '/api/auth',
 			user: '/api/user',
 			election: '/api/election',
+			reports: '/api/reports',
 			search: '/api/search',
 		}
 
@@ -43,6 +44,7 @@ class Server {
 		this.app.use(this.paths.auth, require('../routes/auth.route'))
 		this.app.use(this.paths.election, require('../routes/election.route'))
 		this.app.use(this.paths.user, require('../routes/user.route'))
+		this.app.use(this.paths.reports, require('../routes/reports.route'))
 		this.app.use(this.paths.search, require('../routes/search.route'))
 	}
 

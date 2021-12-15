@@ -21,6 +21,8 @@ const UserSchema = Schema({
 	},
 	image: {
 		type: String,
+		default:
+			'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMQsB3l79Js4_u-Z4kQ8PyyYCo_8QOM8bTdw&usqp=CAU',
 	},
 	role: {
 		type: String,

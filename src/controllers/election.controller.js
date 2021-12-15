@@ -13,6 +13,7 @@ const getAllElections = async (req = request, res = response) => {
 				_id: 1,
 				position: 1,
 				description: 1,
+				private: 1,
 				state: 1,
 			}
 		).sort([['createdAt', -1]])
@@ -37,6 +38,7 @@ const getElectionsByUser = async (req = request, res = response) => {
 				_id: 1,
 				position: 1,
 				description: 1,
+				private: 1,
 			}
 		).sort([['createdAt', -1]])
 
@@ -63,6 +65,7 @@ const getPublicElectionsByUser = async (req = request, res = response) => {
 				_id: 1,
 				position: 1,
 				description: 1,
+				private: 1,
 			}
 		).sort([['createdAt', -1]])
 
@@ -81,6 +84,7 @@ const getAllPrivateElections = async (req = request, res = response) => {
 				_id: 1,
 				position: 1,
 				description: 1,
+				private: 1,
 			}
 		)
 			//.where({ hasVoted: { $exists: true, $size: 0 } })
@@ -102,6 +106,20 @@ const getAllCandidates = async (req = request, res = response) => {
 		})
 
 		res.status(200).json(electionList.candidates)
+	} catch (error) {
+		console.log(error)
+		res.status(500).json({ msg: 'Error en el servidor.' })
+	}
+}
+
+const getAllVoters = async (req = request, res = response) => {
+	const { id } = req.params
+
+	try {
+		const electionList = await Election.findById(id, { voters: 1 }).populate({
+			path: 'voters',
+		})
+		res.status(200).json(electionList.voters)
 	} catch (error) {
 		console.log(error)
 		res.status(500).json({ msg: 'Error en el servidor.' })
@@ -313,6 +331,7 @@ module.exports = {
 	getAllElections,
 	getElectionsByUser,
 	getAllCandidates,
+	getAllVoters,
 	getAllPrivateElections,
 	getPublicElectionsByUser,
 	createElection,

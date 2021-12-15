@@ -15,6 +15,7 @@ const {
 	registerVote,
 	updateElection,
 	removeCandidate,
+	getAllVoters,
 } = require('../controllers/election.controller')
 const { existElecctionInDB, existUserInDB } = require('../helpers')
 const {
@@ -44,6 +45,8 @@ router.get('/', getAllElections)
 router.get('/private', getAllPrivateElections)
 
 router.get('/candidates/:id', getAllCandidates)
+
+router.get('/voters/:id', getAllVoters)
 
 // las elecciones a las que pertenece el usuario con sesion y que aun no hay votado
 router.get(
