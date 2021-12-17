@@ -2,6 +2,23 @@ const { request, response } = require('express')
 const PDF = require('pdfkit-construct')
 const { Election } = require('../models')
 
+const resultsElections = async (req = request, res = response) => {
+	const { uidElection } = req.params
+
+	try {
+		const election = await Election.findById(uidElection, {
+			votes: 1,
+		}).populate({ path: 'votes.candidate' })
+
+		const { votes } = election
+
+		res.json(votes)
+	} catch (error) {
+		console.log('ERROR AL CREAR REPORTE', error)
+		res.json({ msg: 'Error al ver los resultados.' })
+	}
+}
+
 const pdfByCandidates = async (req = request, res = response) => {
 	const { uidElection } = req.params
 
@@ -55,4 +72,4 @@ const pdfByCandidates = async (req = request, res = response) => {
 	}
 }
 
-module.exports = { pdfByCandidates }
+module.exports = { pdfByCandidates, resultsElections }
